@@ -4,7 +4,22 @@ export default function Example() {
     const [fname, setFirstname] = useState("");
     const [lname, setLastname] = useState("");
     const [profiles, setProfiles] = useState([]);
+    const [editId, setEditId] = useState(null);
+    const [editFname, setEditFname] = useState("");
+    const [editLname, setEditLname] = useState("");
 
+    const fetchProfiles = async () => {
+        try {
+            const response = await axios.get("/api/profiles");
+            setProfiles(response.data);
+        } catch (error) {
+            console.error("Error fetching profiles:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchProfiles();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,26 +31,48 @@ export default function Example() {
             alert("Profile created!");
             setFirstname("");
             setLastname("");
+            fetchProfiles();
         } catch (error) {
             alert("Error creating profile.");
         }
     };
 
-
-    const fetchProfiles = async () => {
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this profile?")) return;
         try {
-            const response = await axios.get("/api/profiles"); // Use the correct endpoint
-            setProfiles(response.data); // Set all profiles to state
+            await axios.delete(`/api/profiles/${id}`);
+            setProfiles(profiles.filter((p) => p.id !== id));
         } catch (error) {
-            console.error("Error fetching profiles:", error);
+            alert("Error deleting profile.");
         }
     };
 
+    const handleEdit = (profile) => {
+        setEditId(profile.id);
+        setEditFname(profile.fname || profile.firstname);
+        setEditLname(profile.lname || profile.lastname);
+    };
 
-    useEffect(() => {
-        fetchProfiles();
-    }, []);
+    const handleEditSave = async (id) => {
+        try {
+            await axios.put(`/api/profiles/${id}`, {
+                fname: editFname,
+                lname: editLname,
+            });
+            setEditId(null);
+            setEditFname("");
+            setEditLname("");
+            fetchProfiles();
+        } catch (error) {
+            alert("Error updating profile.");
+        }
+    };
 
+    const handleEditCancel = () => {
+        setEditId(null);
+        setEditFname("");
+        setEditLname("");
+    };
 
     return (
         <div className="home">
@@ -68,13 +105,43 @@ export default function Example() {
                         <tr>
                             <th>Firstname</th>
                             <th>Lastname</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {profiles.map((profile, idx) => (
                             <tr key={profile.id || idx}>
-                                <td>{profile.fname || profile.firstname}</td>
-                                <td>{profile.lname || profile.lastname}</td>
+                                {editId === profile.id ? (
+                                    <>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value={editFname}
+                                                onChange={(e) => setEditFname(e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value={editLname}
+                                                onChange={(e) => setEditLname(e.target.value)}
+                                            />
+                                        </td>
+                                        <td>
+                                            <button onClick={() => handleEditSave(profile.id)}>Save</button>
+                                            <button onClick={handleEditCancel}>Cancel</button>
+                                        </td>
+                                    </>
+                                ) : (
+                                    <>
+                                        <td>{profile.fname || profile.firstname}</td>
+                                        <td>{profile.lname || profile.lastname}</td>
+                                        <td>
+                                            <button onClick={() => handleEdit(profile)}>Edit</button>
+                                            <button onClick={() => handleDelete(profile.id)}>Delete</button>
+                                        </td>
+                                    </>
+                                )}
                             </tr>
                         ))}
                     </tbody>

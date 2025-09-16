@@ -22,17 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Sample API for profiles (for React frontend)
-Route::get('/profiles', function () {
-    return Profile::all();
-});
 
-Route::post('/register', function (Request $request) {
-    $profile = Profile::create([
-        'fname' => $request->input('fname'),
-        'lname' => $request->input('lname'),
-    ]);
-    return $profile;
-});
+
+use App\Http\Controllers\ProfileController;
+
+// Profile API routes
+Route::get('/profiles', [ProfileController::class, 'index']);
+Route::post('/register', [ProfileController::class, 'store']);
+Route::put('/profiles/{profile}', [ProfileController::class, 'update']);
+Route::delete('/profiles/{profile}', [ProfileController::class, 'destroy']);
 
 

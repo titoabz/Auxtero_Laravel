@@ -14,7 +14,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        //
+    return Profile::all();
     }
 
     /**
@@ -25,7 +25,11 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $profile = Profile::create([
+            'fname' => $request->input('fname'),
+            'lname' => $request->input('lname'),
+        ]);
+        return $profile;
     }
 
     /**
@@ -48,7 +52,11 @@ class ProfileController extends Controller
      */
     public function update(Request $request, Profile $profile)
     {
-        //
+        $profile->update([
+            'fname' => $request->input('fname'),
+            'lname' => $request->input('lname'),
+        ]);
+        return $profile;
     }
 
     /**
@@ -59,6 +67,7 @@ class ProfileController extends Controller
      */
     public function destroy(Profile $profile)
     {
-        //
+    $profile->delete();
+    return response()->json(['success' => true]);
     }
 }
