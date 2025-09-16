@@ -10,9 +10,18 @@
         "production": "mix --production"
     },
     "devDependencies": {
-        "axios": "^0.21",
+        "@babel/preset-react": "^7.27.1",
+        "axios": "^1.12.2",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
-        "postcss": "^8.1.14"
+        "postcss": "^8.1.14",
+        "resolve-url-loader": "^5.0.0"
+    },
+    "dependencies": {
+        "@vitejs/plugin-react": "^5.0.2",
+        "bootstrap": "^5.3.8",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "react-router-dom": "^7.9.1"
     }
 }
