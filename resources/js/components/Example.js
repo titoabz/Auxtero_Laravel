@@ -55,6 +55,14 @@ export default function Example() {
                     />
                     <input type="submit" />
                 </form>
+                {/* Show the current input values as a label */}
+                <div style={{ margin: '10px 0', fontWeight: 'bold' }}>
+                    {fname || lname ? (
+                        <>
+                            <label>Current Input: {fname} {lname}</label>
+                        </>
+                    ) : null}
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -63,10 +71,10 @@ export default function Example() {
                         </tr>
                     </thead>
                     <tbody>
-                        {profiles.map((profile) => (
-                            <tr key={profile.id}>
-                                <td>{profile.fname}</td>
-                                <td>{profile.lname}</td>
+                        {profiles.map((profile, idx) => (
+                            <tr key={profile.id || idx}>
+                                <td>{profile.fname || profile.firstname}</td>
+                                <td>{profile.lname || profile.lastname}</td>
                             </tr>
                         ))}
                     </tbody>
