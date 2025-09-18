@@ -75,77 +75,90 @@ export default function Example() {
     };
 
     return (
-        <div className="home">
-            <div className="container">
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Firstname"
-                        value={fname}
-                        onChange={(e) => setFirstname(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Lastname"
-                        value={lname}
-                        onChange={(e) => setLastname(e.target.value)}
-                    />
-                    <input type="submit" />
+        <div className="home py-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+            <div className="container shadow p-4 bg-white rounded" style={{ maxWidth: 700 }}>
+                <h2 className="mb-4 text-center" style={{ fontWeight: 700, letterSpacing: 1 }}>Profile Manager</h2>
+                <form onSubmit={handleSubmit} className="row g-3 align-items-end mb-4">
+                    <div className="col-md-5">
+                        <label className="form-label">Firstname</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Firstname"
+                            value={fname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-md-5">
+                        <label className="form-label">Lastname</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Lastname"
+                            value={lname}
+                            onChange={(e) => setLastname(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-md-2 d-grid">
+                        <button type="submit" className="btn btn-primary">Add</button>
+                    </div>
                 </form>
                 {/* Show the current input values as a label */}
-                <div style={{ margin: '10px 0', fontWeight: 'bold' }}>
-                    {fname || lname ? (
-                        <>
-                            <label>Current Input: {fname} {lname}</label>
-                        </>
-                    ) : null}
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {profiles.map((profile, idx) => (
-                            <tr key={profile.id || idx}>
-                                {editId === profile.id ? (
-                                    <>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={editFname}
-                                                onChange={(e) => setEditFname(e.target.value)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                value={editLname}
-                                                onChange={(e) => setEditLname(e.target.value)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <button onClick={() => handleEditSave(profile.id)}>Save</button>
-                                            <button onClick={handleEditCancel}>Cancel</button>
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td>{profile.fname || profile.firstname}</td>
-                                        <td>{profile.lname || profile.lastname}</td>
-                                        <td>
-                                            <button onClick={() => handleEdit(profile)}>Edit</button>
-                                            <button onClick={() => handleDelete(profile.id)}>Delete</button>
-                                        </td>
-                                    </>
-                                )}
+                {fname || lname ? (
+                    <div className="alert alert-info py-2 mb-4">
+                        <strong>Current Input:</strong> {fname} {lname}
+                    </div>
+                ) : null}
+                <div className="table-responsive">
+                    <table className="table table-striped align-middle">
+                        <thead className="table-light">
+                            <tr>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                                <th style={{ width: 160 }}>Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {profiles.map((profile, idx) => (
+                                <tr key={profile.id || idx}>
+                                    {editId === profile.id ? (
+                                        <>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={editFname}
+                                                    onChange={(e) => setEditFname(e.target.value)}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    value={editLname}
+                                                    onChange={(e) => setEditLname(e.target.value)}
+                                                />
+                                            </td>
+                                            <td>
+                                                <button className="btn btn-success btn-sm me-2" onClick={() => handleEditSave(profile.id)}>Save</button>
+                                                <button className="btn btn-secondary btn-sm" onClick={handleEditCancel}>Cancel</button>
+                                            </td>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td>{profile.fname || profile.firstname}</td>
+                                            <td>{profile.lname || profile.lastname}</td>
+                                            <td>
+                                                <button className="btn btn-outline-primary btn-sm me-2" onClick={() => handleEdit(profile)}>Edit</button>
+                                                <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(profile.id)}>Delete</button>
+                                            </td>
+                                        </>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
