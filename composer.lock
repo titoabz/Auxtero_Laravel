@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf14086919a839fe740e00554e4baff6",
+    "content-hash": "5406d81aabd24178d9cf9b8831ed195a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1204,6 +1204,63 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2024-11-20T15:55:41+00:00"
+        },
+        {
+            "name": "laravel/installer",
+            "version": "v4.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/installer.git",
+                "reference": "bbbd8e6d197d5a9f0246d851f6c9ecf7e7892cf4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/installer/zipball/bbbd8e6d197d5a9f0246d851f6c9ecf7e7892cf4",
+                "reference": "bbbd8e6d197d5a9f0246d851f6c9ecf7e7892cf4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0",
+                "symfony/console": "^4.0|^5.0|^6.0",
+                "symfony/process": "^4.2|^5.0|^6.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^8.0|^9.3"
+            },
+            "bin": [
+                "bin/laravel"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Installer\\Console\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel application installer.",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/installer/issues",
+                "source": "https://github.com/laravel/installer/tree/v4.5.1"
+            },
+            "time": "2023-07-25T15:05:27+00:00"
         },
         {
             "name": "laravel/sanctum",
