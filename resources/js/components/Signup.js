@@ -4,23 +4,36 @@ import { useNavigate } from 'react-router-dom';
 export default function Signup({ onLogin }) {
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // There is no server-side signup persistence in this demo.
-    // We'll attempt to login with provided credentials (works if server env matches).
+    setError('');
+    setLoading(true);
+    
     try {
+      if (!user || !pass) {
+        throw new Error('Username and password are required');
+      }
+      
       const res = await axios.post('/api/signup', { user, pass });
       const token = res.data.token;
-  if (onLogin) onLogin(token);
-  setUser('');
-  setPass('');
-  navigate('/');
+      
+      // Save token to localStorage
+      localStorage.setItem('portal_token', token);
+      localStorage.setItem('token_created', new Date().toISOString());
+      
+      if (onLogin) onLogin(token);
+      setUser('');
+      setPass('');
+      navigate('/');
     } catch (err) {
-      // Signup failed — show a simple alert
-      alert('Signup failed. Check console for details.');
-      console.error(err);
+      const message = err.response?.data?.message || err.message || 'Signup failed. Please try again.';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,19 +45,35 @@ export default function Signup({ onLogin }) {
           <h4 className="mb-3">Faculty Signup</h4>
           <p className="text-muted small">Faculty</p>
           <form onSubmit={handleSubmit}>
+            {error && <div className="alert alert-danger mb-3">{error}</div>}
             <div className="mb-2">
-              <label className="form-label">Desired User</label>
-              <input className="form-control" value={user} onChange={e => setUser(e.target.value)} />
+              <label className="form-label">Username</label>
+              <input 
+                className="form-control" 
+                value={user} 
+                onChange={e => setUser(e.target.value)}
+                disabled={loading}
+                required
+              />
             </div>
             <div className="mb-3">
-              <label className="form-label">Desired Password</label>
-              <input className="form-control" type="password" value={pass} onChange={e => setPass(e.target.value)} />
+              <label className="form-label">Password</label>
+              <input 
+                className="form-control" 
+                type="password" 
+                value={pass} 
+                onChange={e => setPass(e.target.value)}
+                disabled={loading}
+                required
+                minLength={6}
+              />
             </div>
             <div className="d-grid">
-              <button className="btn btn-outline-primary">Signup</button>
+              <button className="btn btn-outline-primary" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Signup'}
+              </button>
             </div>
           </form>
-          <div className="mt-3 text-muted small">This will create a local faculty account stored in the database.</div>
         </div>
       </div>
     </div>

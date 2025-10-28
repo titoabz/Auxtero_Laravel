@@ -75157,14 +75157,24 @@ function Login(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     pass = _useState4[0],
     setPass = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    loading = _useState6[0],
+    setLoading = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState8 = _slicedToArray(_useState7, 2),
+    error = _useState8[0],
+    setError = _useState8[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useNavigate)();
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(e) {
-      var res, token, _t;
+      var res, token, _err$response, message, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
             e.preventDefault();
+            setError('');
+            setLoading(true);
             _context.p = 1;
             _context.n = 2;
             return axios.post('/api/login', {
@@ -75173,10 +75183,13 @@ function Login(_ref) {
             });
           case 2:
             res = _context.v;
-            token = res.data.token;
+            token = res.data.token; // Save token to localStorage for protected routes
+            localStorage.setItem('portal_token', token);
+            localStorage.setItem('token_created', new Date().toISOString());
             if (onLogin) onLogin(token);
             setUser('');
             setPass('');
+
             // navigate to portal after login
             navigate('/');
             _context.n = 4;
@@ -75184,11 +75197,16 @@ function Login(_ref) {
           case 3:
             _context.p = 3;
             _t = _context.v;
-            alert('Login failed: invalid credentials');
+            message = ((_err$response = _t.response) === null || _err$response === void 0 || (_err$response = _err$response.data) === null || _err$response === void 0 ? void 0 : _err$response.message) || 'Login failed. Please check your credentials.';
+            setError(message);
           case 4:
+            _context.p = 4;
+            setLoading(false);
+            return _context.f(4);
+          case 5:
             return _context.a(2);
         }
-      }, _callee, null, [[1, 3]]);
+      }, _callee, null, [[1, 3, 4, 5]]);
     }));
     return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
@@ -75207,7 +75225,9 @@ function Login(_ref) {
     className: "mb-3"
   }, "Faculty Login"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
     onSubmit: handleSubmit
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, error && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "alert alert-danger mb-3"
+  }, error), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mb-2"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
     className: "form-label"
@@ -75216,7 +75236,8 @@ function Login(_ref) {
     value: user,
     onChange: function onChange(e) {
       return setUser(e.target.value);
-    }
+    },
+    disabled: loading
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
@@ -75227,12 +75248,14 @@ function Login(_ref) {
     value: pass,
     onChange: function onChange(e) {
       return setPass(e.target.value);
-    }
+    },
+    disabled: loading
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "d-grid"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    className: "btn btn-primary"
-  }, "Login"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "btn btn-primary",
+    disabled: loading
+  }, loading ? 'Logging in...' : 'Login'))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mt-3 text-center"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("small", null, "Don't have an account? ", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__.Link, {
     to: "/signup"
@@ -75260,12 +75283,30 @@ __webpack_require__.r(__webpack_exports__);
 function ProtectedRoute(_ref) {
   var children = _ref.children;
   var token = localStorage.getItem('portal_token');
+  var tokenCreated = localStorage.getItem('token_created');
+
+  // Check if token exists
   if (!token) {
-    // Not authenticated — redirect to login
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__.Navigate, {
       to: "/login",
       replace: true
     });
+  }
+
+  // Check token expiration (24 hours)
+  if (tokenCreated) {
+    var created = new Date(tokenCreated);
+    var now = new Date();
+    var hoursDiff = (now - created) / (1000 * 60 * 60);
+    if (hoursDiff >= 24) {
+      // Token expired, clear storage and redirect to login
+      localStorage.removeItem('portal_token');
+      localStorage.removeItem('token_created');
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__.Navigate, {
+        to: "/login",
+        replace: true
+      });
+    }
   }
   return children;
 }
@@ -75374,41 +75415,60 @@ function Signup(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     pass = _useState4[0],
     setPass = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    loading = _useState6[0],
+    setLoading = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+    _useState8 = _slicedToArray(_useState7, 2),
+    error = _useState8[0],
+    setError = _useState8[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_1__.useNavigate)();
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(e) {
-      var res, token, _t;
+      var res, token, _err$response, message, _t;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.p = _context.n) {
           case 0:
             e.preventDefault();
-            // There is no server-side signup persistence in this demo.
-            // We'll attempt to login with provided credentials (works if server env matches).
+            setError('');
+            setLoading(true);
             _context.p = 1;
-            _context.n = 2;
+            if (!(!user || !pass)) {
+              _context.n = 2;
+              break;
+            }
+            throw new Error('Username and password are required');
+          case 2:
+            _context.n = 3;
             return axios.post('/api/signup', {
               user: user,
               pass: pass
             });
-          case 2:
+          case 3:
             res = _context.v;
-            token = res.data.token;
+            token = res.data.token; // Save token to localStorage
+            localStorage.setItem('portal_token', token);
+            localStorage.setItem('token_created', new Date().toISOString());
             if (onLogin) onLogin(token);
             setUser('');
             setPass('');
             navigate('/');
-            _context.n = 4;
+            _context.n = 5;
             break;
-          case 3:
-            _context.p = 3;
-            _t = _context.v;
-            // Signup failed — show a simple alert
-            alert('Signup failed. Check console for details.');
-            console.error(_t);
           case 4:
+            _context.p = 4;
+            _t = _context.v;
+            message = ((_err$response = _t.response) === null || _err$response === void 0 || (_err$response = _err$response.data) === null || _err$response === void 0 ? void 0 : _err$response.message) || _t.message || 'Signup failed. Please try again.';
+            setError(message);
+          case 5:
+            _context.p = 5;
+            setLoading(false);
+            return _context.f(5);
+          case 6:
             return _context.a(2);
         }
-      }, _callee, null, [[1, 3]]);
+      }, _callee, null, [[1, 4, 5, 6]]);
     }));
     return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
@@ -75429,34 +75489,40 @@ function Signup(_ref) {
     className: "text-muted small"
   }, "Faculty"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("form", {
     onSubmit: handleSubmit
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, error && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+    className: "alert alert-danger mb-3"
+  }, error), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mb-2"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
     className: "form-label"
-  }, "Desired User"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, "Username"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
     className: "form-control",
     value: user,
     onChange: function onChange(e) {
       return setUser(e.target.value);
-    }
+    },
+    disabled: loading,
+    required: true
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "mb-3"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("label", {
     className: "form-label"
-  }, "Desired Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
+  }, "Password"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("input", {
     className: "form-control",
     type: "password",
     value: pass,
     onChange: function onChange(e) {
       return setPass(e.target.value);
-    }
+    },
+    disabled: loading,
+    required: true,
+    minLength: 6
   })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "d-grid"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("button", {
-    className: "btn btn-outline-primary"
-  }, "Signup"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    className: "mt-3 text-muted small"
-  }, "This will create a local faculty account stored in the database."))));
+    className: "btn btn-outline-primary",
+    disabled: loading
+  }, loading ? 'Creating Account...' : 'Signup'))))));
 }
 
 /***/ }),
