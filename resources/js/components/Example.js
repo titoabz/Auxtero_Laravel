@@ -74,35 +74,88 @@ export default function Example() {
         setEditLname("");
     };
 
+    const [tab, setTab] = useState('students');
+
     return (
-        <div className="home py-5" style={{ background: '#f8fafc', minHeight: '100vh' }}>
+        <div className="home py-5" style={{ background: '#ffffffff', minHeight: '100vh' }}>
             <div className="container shadow p-4 bg-white rounded" style={{ maxWidth: 700 }}>
-                <h2 className="mb-4 text-center" style={{ fontWeight: 700, letterSpacing: 1 }}>Profile Manager</h2>
-                <form onSubmit={handleSubmit} className="row g-3 align-items-end mb-4">
-                    <div className="col-md-5">
-                        <label className="form-label">Firstname</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Firstname"
-                            value={fname}
-                            onChange={(e) => setFirstname(e.target.value)}
-                        />
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <h2 className="Faculty Portal" style={{ fontWeight: 700, letterSpacing: 1 }}>Faculty Portal</h2>
+                    <div>
+                        <small className="text-muted">Manage students, grades and attendance</small>
                     </div>
-                    <div className="col-md-5">
-                        <label className="form-label">Lastname</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Lastname"
-                            value={lname}
-                            onChange={(e) => setLastname(e.target.value)}
-                        />
+                </div>
+
+                <div className="dashboard-cards mb-4">
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <h6 className="card-title text-muted">Total Students</h6>
+                            <h3 className="card-text">{profiles.length}</h3>
+                        </div>
                     </div>
-                    <div className="col-md-2 d-grid">
-                        <button type="submit" className="btn btn-primary">Add</button>
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <h6 className="card-title text-muted">Avg Grade</h6>
+                            <h3 className="card-text">--</h3>
+                        </div>
                     </div>
-                </form>
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <h6 className="card-title text-muted">Attendance Rate</h6>
+                            <h3 className="card-text">--%</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <ul className="nav nav-pills mb-3">
+                    <li className="nav-item">
+                        <button className={`nav-link ${tab === 'students' ? 'active' : ''}`} onClick={() => setTab('students')}>Students</button>
+                    </li>
+                    <li className="nav-item">
+                        <button className={`nav-link ${tab === 'grades' ? 'active' : ''}`} onClick={() => setTab('grades')}>Grades</button>
+                    </li>
+                    <li className="nav-item">
+                        <button className={`nav-link ${tab === 'attendance' ? 'active' : ''}`} onClick={() => setTab('attendance')}>Attendance</button>
+                    </li>
+                </ul>
+
+                {tab === 'students' && (
+                    <form onSubmit={handleSubmit} className="row g-3 align-items-end mb-4">
+                        <div className="col-md-5">
+                            <label className="form-label">Firstname</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Firstname"
+                                value={fname}
+                                onChange={(e) => setFirstname(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-5">
+                            <label className="form-label">Lastname</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Lastname"
+                                value={lname}
+                                onChange={(e) => setLastname(e.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-2 d-grid">
+                            <button type="submit" className="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                )}
+                {tab === 'grades' && (
+                    <div className="mb-4">
+                        <p className="text-muted">Grades overview coming soon — this section will show class averages and recent assessments.</p>
+                    </div>
+                )}
+                {tab === 'attendance' && (
+                    <div className="mb-4">
+                        <p className="text-muted">Attendance dashboard coming soon — this section will display recent attendance records and alerts.</p>
+                    </div>
+                )}
                 {/* Show the current input values as a label */}
                 {fname || lname ? (
                     <div className="alert alert-info py-2 mb-4">

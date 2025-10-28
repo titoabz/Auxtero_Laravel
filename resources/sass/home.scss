@@ -1,6 +1,48 @@
-#homepage {
-    p {
-        color: red;
-        background-color: aqua;
+// Styles for the faculty portal / dashboard
+
+body {
+    background: $bg;
+}
+
+.home {
+    font-family: $base-font-family;
+}
+
+.container {
+    max-width: 1100px;
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    .card {
+        border: 0;
+        background: linear-gradient(180deg, rgba(255,255,255,0.9), $card-bg);
+        border-radius: $card-radius;
+        transition: transform .12s ease, box-shadow .12s ease;
     }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+
+    .card-title { color: $muted; font-size: .85rem; }
+    .card-text { color: $text; font-weight: 700; font-size: 1.5rem; }
+}
+
+.table-responsive { margin-top: .5rem; }
+
+.table thead th { border-bottom: 2px solid rgba(99,102,241,0.06); }
+.table tbody tr td { vertical-align: middle; }
+
+.nav-pills .nav-link {
+    border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-cards { grid-template-columns: 1fr; }
+    .container { padding: 1rem; }
 }

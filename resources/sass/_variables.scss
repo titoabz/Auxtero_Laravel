@@ -1,0 +1,22 @@
+// Color palette (change these to restyle the site)
+$primary:    #2563eb; // blue-600
+$secondary:  #64748b; // slate-500
+$accent:     #8b5cf6; // violet-500
+$success:    #10b981; // green-500
+$danger:     #ef4444; // red-500
+$muted:      #6b7280; // gray-500
+$bg:         #f8fafc; // very light
+$card-bg:    #ffffff;
+$text:       #0f172a; // slate-900
+
+// Spacing / radius
+$card-radius: 0.5rem;
+
+// Typography
+$base-font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+
+// Bootstrap overrides can go here (these are read by Bootstrap when imported after this file)
+$body-bg: $bg;
+$body-color: $text;
+$font-family-base: $base-font-family;
+$primary: $primary;
