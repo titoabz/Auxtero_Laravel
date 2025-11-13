@@ -18,8 +18,11 @@ class AuthController extends Controller
         // Debug logging
         logger()->info('Login attempt', ['username' => $u]);
 
-        // First try local faculties table
-        $faculty = Faculty::where('username', $u)->first();
+        // First try local faculties table — accept username, email username, or employee ID
+        $faculty = Faculty::where('username', $u)
+            ->orWhere('email', $u)
+            ->orWhere('employee_id', $u)
+            ->first();
         
         // Debug logging
         if ($faculty) {
@@ -35,7 +38,23 @@ class AuthController extends Controller
                 $faculty->token = Str::random(40);
                 $faculty->save();
             }
-            return response()->json(['token' => $faculty->token]);
+            // Try to get a display name from a linked user record (created at signup)
+            $displayFirst = null;
+            $email = $faculty->username . '@faculty.local';
+            $userRecord = User::where('email', $email)->first();
+            if ($userRecord && !empty($userRecord->name)) {
+                // extract first name only from the stored full name
+                $parts = preg_split('/[\.\s_@\-]+/', trim($userRecord->name));
+                $first = $parts[0] ?? $userRecord->name;
+                $displayFirst = ucfirst(strtolower($first));
+            } else {
+                // fallback: derive a friendly first name from the username
+                $parts = preg_split('/[\.\s_@\-]+/', $faculty->username);
+                $first = $parts[0] ?? $faculty->username;
+                $displayFirst = ucfirst(strtolower($first));
+            }
+
+            return response()->json(['token' => $faculty->token, 'name' => $displayFirst]);
         } else if ($faculty) {
             logger()->info('Password check failed', ['username' => $u]);
         }
@@ -45,7 +64,11 @@ class AuthController extends Controller
         $pass = config('faculty.pass');
         logger()->info('Checking against config', ['config_user' => $user]);
         if ($u === $user && $p === $pass) {
-            return response()->json(['token' => config('faculty.token')]);
+            // derive a display name from the configured username
+            $parts = preg_split('/[\.\s_@\-]+/', $user);
+            $first = $parts[0] ?? $user;
+            $display = ucfirst(strtolower($first));
+            return response()->json(['token' => config('faculty.token'), 'name' => $display]);
         }
 
         return response()->json(['message' => 'Invalid credentials'], 401);
@@ -76,6 +99,14 @@ class AuthController extends Controller
             $faculty->username = $u;
             $faculty->password = $hashedPassword;
             $faculty->token = $token;
+            // optional extra fields sent from frontend
+            $faculty->first_name = $request->input('first_name');
+            $faculty->last_name = $request->input('last_name');
+            $faculty->middle_name = $request->input('middle_name');
+            $faculty->employee_id = $request->input('employee_id');
+            // set email if frontend provided an email username or else use username@faculty.local
+            $providedEmail = $request->input('email');
+            $faculty->email = $providedEmail ? $providedEmail : ($u . '@faculty.local');
             $faculty->save();
             
             logger()->info('Created faculty record', ['username' => $u]);
@@ -88,8 +119,16 @@ class AuthController extends Controller
                 $attempt++;
             }
             
+            // Build a nicer display name for the user record (full name if provided)
+            $first = $request->input('first_name');
+            $last = $request->input('last_name');
+            $displayName = $u;
+            if ($first || $last) {
+                $displayName = trim(($first ?? '') . ' ' . ($last ?? ''));
+            }
+
             User::create([
-                'name' => $u,
+                'name' => $displayName,
                 'email' => $email,
                 'password' => $hashedPassword
             ]);
@@ -97,7 +136,10 @@ class AuthController extends Controller
             logger()->info('Created user record', ['email' => $email]);
             
             \DB::commit();
-            return response()->json(['token' => $token]);
+            // Return first name only for frontend greeting; prefer provided first name when available
+            $firstForReturn = $first ?: preg_split('/[\.\s_@\-]+/', $u)[0] ?? $u;
+            $firstForReturn = ucfirst(strtolower($firstForReturn));
+            return response()->json(['token' => $token, 'name' => $firstForReturn]);
             
         } catch (\Exception $e) {
             \DB::rollBack();

@@ -11,7 +11,26 @@ class Faculty extends Model
     protected $fillable = [
         'username',
         'password',
-        'token'
+        'token',
+        'first_name',
+        'last_name',
+        'middle_name',
+        'employee_id',
+        'email',
+        'profile_picture',
+        'position',
+        'department',
+        'bio',
+        'office_location',
+        'phone',
+        'office_hours',
+        'years_experience',
+        'at_university_since',
+        'publications',
+        'courses_teaching',
+        'research_areas',
+        'expertise',
+        'achievements'
     ];
     
     protected $hidden = [

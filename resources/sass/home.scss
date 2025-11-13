@@ -46,3 +46,41 @@ body {
     .dashboard-cards { grid-template-columns: 1fr; }
     .container { padding: 1rem; }
 }
+
+// Alerts styling
+.student-alerts {
+    background: #e9f2ff;
+    border-radius: $card-radius;
+}
+
+.student-alerts .alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.student-alerts .alert-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem;
+    background: #fde7e7; // light red
+    border: 1px solid #f3b4b4; // soft red border
+    border-radius: 10px;
+}
+
+.student-alerts .alert-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #d4d7de;
+}
+
+.student-alerts .alert-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-alerts .alert-issue::before {
+    content: '';
+}

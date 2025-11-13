@@ -15,9 +15,25 @@ export default function Login({ onLogin }) {
     try {
       const res = await axios.post('/api/login', { user, pass });
       const token = res.data.token;
-      
+
       // Save token to localStorage for protected routes
       localStorage.setItem('portal_token', token);
+      // Prefer backend-provided display name when available
+      const backendName = res.data?.name;
+      if (backendName) {
+        localStorage.setItem('faculty_name', backendName);
+      } else {
+        // Fallback: infer first name from username
+        try {
+          const raw = user || '';
+          const first = raw.split(/[.\s@_-]/)[0] || raw;
+          const display = first ? (first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()) : '';
+          if (display) localStorage.setItem('faculty_name', display);
+        } catch (e) {
+          // ignore
+        }
+      }
+
       localStorage.setItem('token_created', new Date().toISOString());
       
       if (onLogin) onLogin(token);
@@ -35,41 +51,50 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="container py-5" style={{ maxWidth: 520 }}>
-      <div className="card shadow-sm">
-        <div className="card-body">
-          <h4 className="mb-3">Faculty Login</h4>
-          <form onSubmit={handleSubmit}>
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
-            <div className="mb-2">
-              <label className="form-label">User</label>
-              <input 
-                className="form-control" 
-                value={user} 
+    <div className="auth-page" style={{minHeight:'100vh', display:'flex', flexDirection:'column'}}>
+      <div style={{flex:1, display:'flex', justifyContent:'center', alignItems:'center', paddingTop:'2rem'}}>
+      <div className="auth-container">
+  <img src="/img/logo.png" alt="School Logo" className="auth-logo" />
+        <h1 className="auth-title">Faculty Portal</h1>
+        <p className="auth-subtitle">Sign in to manage your respective department students</p>
+        
+        <div className="auth-card">
+          <div className="auth-tabs">
+            <Link to="/login" className="tab active">Sign In</Link>
+            <Link to="/signup" className="tab">Sign Up</Link>
+          </div>
+
+          {error && <div className="alert alert-danger mb-4">{error}</div>}
+          
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="text"
+                value={user}
                 onChange={e => setUser(e.target.value)}
-                disabled={loading} 
+                disabled={loading}
+                required
               />
             </div>
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input 
-                className="form-control" 
-                type="password" 
-                value={pass} 
+            
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                value={pass}
                 onChange={e => setPass(e.target.value)}
                 disabled={loading}
+                required
               />
             </div>
-            <div className="d-grid">
-              <button className="btn btn-primary" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </div>
+
+            <button type="submit" disabled={loading}>
+              {loading ? 'Signing in...' : 'Login'}
+            </button>
           </form>
-          <div className="mt-3 text-center">
-            <small>Don't have an account? <Link to="/signup">Sign up</Link></small>
-          </div>
         </div>
+      </div>
       </div>
     </div>
   );

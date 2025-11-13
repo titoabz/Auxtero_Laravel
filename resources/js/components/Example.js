@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
+import HeaderBar from './HeaderBar';
 
 export default function Example() {
     const [fname, setFirstname] = useState("");
@@ -111,19 +113,12 @@ export default function Example() {
         }
     };
 
-    const handleLogout = () => {
-        setToken(null);
-    };
+    // Logout handled by HeaderBar globally now
 
     return (
         <div className="home py-5" style={{ background: '#ffffffff', minHeight: '100vh' }}>
+            <HeaderBar showHome />
             <div className="container shadow p-4 bg-white rounded" style={{ maxWidth: 700 }}>
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="mb-0" style={{ fontWeight: 700, letterSpacing: 1 }}>Faculty Portal</h2>
-                    <div>
-                        <small className="text-muted">Manage students, grades and attendance</small>
-                    </div>
-                </div>
 
                 <div className="dashboard-cards mb-4">
                     <div className="card shadow-sm">
@@ -160,12 +155,7 @@ export default function Example() {
                     </ul>
 
                     <div>
-                        {token ? (
-                            <div className="d-flex align-items-center">
-                                <span className="me-3 text-success">Logged in</span>
-                                <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>Logout</button>
-                            </div>
-                        ) : (
+                        {!token && (
                             <div className="d-flex gap-2">
                                 <a className="btn btn-sm btn-outline-primary" href="/login">Login</a>
                                 <a className="btn btn-sm btn-outline-secondary" href="/signup">Signup</a>
